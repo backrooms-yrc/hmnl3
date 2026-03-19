@@ -1,0 +1,292 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useDevice } from '@/contexts/DeviceContext';
+import { worldviewAPI } from '@/utils/worldview-api';
+import { getAllActiveChannels } from '@/db/api';
+import { Worldview } from '@/types/worldview';
+import type { Channel } from '@/types/types';
+import PostCard from '@/components/worldview/PostCard';
+import LoginDialog from '@/components/worldview/LoginDialog';
+import { ChatRoom } from '@/components/ChatRoom';
+import { ChannelChatRoom } from '@/components/ChannelChatRoom';
+import { Plus, Search, LogIn, LogOut, User, Radio, MessageSquare } from 'lucide-react';
+
+export default function WorldviewPage() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { isMobile } = useDevice();
+
+  const [posts, setPosts] = useState<Worldview[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [category, setCategory] = useState<string>('all');
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  // 直播频道相关状态
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [selectedChannel, setSelectedChannel] = useState<Channel | null>(null);
+  const [channelsLoading, setChannelsLoading] = useState(true);
+
+  const limit = 12;
+
+  useEffect(() => {
+    checkAuth();
+    loadChannels();
+  }, []);
+
+  useEffect(() => {
+    loadPosts();
+  }, [currentPage, category]);
+
+  const checkAuth = () => {
+    const authenticated = worldviewAPI.isAuthenticated();
+    setIsAuthenticated(authenticated);
+    if (authenticated) {
+      setCurrentUser(worldviewAPI.getCurrentUser());
+    }
+  };
+
+  const loadChannels = async () => {
+    try {
+      setChannelsLoading(true);
+      const data = await getAllActiveChannels();
+      // 只显示正在直播的频道
+      const liveChannels = data.filter((ch: any) => ch.is_live);
+      setChannels(liveChannels);
+      if (liveChannels.length > 0 && !selectedChannel) {
+        setSelectedChannel(liveChannels[0]);
+      }
+    } catch (error) {
+      console.error('加载频道失败:', error);
+    } finally {
+      setChannelsLoading(false);
+    }
+  };
+
+  const loadPosts = async () => {
+    setLoading(true);
+    try {
+      const params: any = {
+        page: currentPage,
+        limit,
+      };
+      if (category && category !== "all") {
+        params.category = category;
+      }
+      if (searchQuery) {
+        params.search = searchQuery;
+      }
+
+      const data = await worldviewAPI.getWorldviews(params);
+      setPosts(data.worldviews);
+      setTotalPages(data.totalPages);
+      setTotal(data.total);
+    } catch (error) {
+      console.error('加载帖子失败:', error);
+      toast({
+        title: '加载失败',
+        description: '无法加载帖子列表，请稍后重试',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+    loadPosts();
+  };
+
+  const handleLike = async (postId: string) => {
+    if (!isAuthenticated) {
+      setLoginDialogOpen(true);
+      return;
+    }
+
+    try {
+      await worldviewAPI.toggleLike(postId);
+      loadPosts();
+    } catch (error) {
+      console.error('点赞失败:', error);
+      toast({
+        title: '操作失败',
+        description: '点赞操作失败，请稍后重试',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleLogout = () => {
+    worldviewAPI.logout();
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+    toast({
+      title: '已登出',
+      description: '您已成功登出幻境界',
+    });
+  };
+
+  const handleCreatePost = () => {
+    if (!isAuthenticated) {
+      setLoginDialogOpen(true);
+      return;
+    }
+    navigate('/worldview/create');
+  };
+
+  const isPostLiked = (post: Worldview) => {
+    if (!currentUser) return false;
+    return post.likingUsers?.some((user) => user.id === currentUser.id) || false;
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="border-b bg-card">
+        <div className="container mx-auto px-4 py-4">
+          <div className={`flex gap-3 ${isMobile ? 'flex-col' : 'flex-row items-center justify-between'}`}>
+            <div>
+              <h1 className="text-xl font-bold mb-1">幻境界</h1>
+              <p className="text-sm text-muted-foreground">探索无限可能的世界观</p>
+            </div>
+
+            <div className={`flex gap-2 ${isMobile ? 'flex-col' : 'flex-row'}`}>
+              {isAuthenticated ? (
+                <>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted text-sm">
+                    <User className="w-4 h-4" />
+                    <span>{currentUser?.username}</span>
+                  </div>
+                  <Button onClick={handleCreatePost} className={isMobile ? 'w-full' : ''} size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    发布帖子
+                  </Button>
+                  <Button variant="outline" onClick={handleLogout} className={isMobile ? 'w-full' : ''} size="sm">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    登出
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={() => setLoginDialogOpen(true)} className={isMobile ? 'w-full' : ''} size="sm">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  登录
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="border-b bg-card">
+        <div className="container mx-auto px-4 py-4">
+          <div className={`flex gap-3 ${isMobile ? 'flex-col' : 'flex-row'}`}>
+            <div className="flex-1 flex gap-2">
+              <Input
+                placeholder="搜索标题、描述或标签..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                className="flex-1"
+              />
+              <Button onClick={handleSearch}>
+                <Search className="w-4 h-4 mr-2" />
+                搜索
+              </Button>
+            </div>
+
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className={isMobile ? 'w-full' : 'w-48'}>
+                <SelectValue placeholder="所有分类" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">所有分类</SelectItem>
+                <SelectItem value="默认分类">默认分类</SelectItem>
+                <SelectItem value="科幻">科幻</SelectItem>
+                <SelectItem value="奇幻">奇幻</SelectItem>
+                <SelectItem value="现实">现实</SelectItem>
+                <SelectItem value="其他">其他</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="mt-3 text-sm text-muted-foreground">
+            共找到 {total} 个帖子
+          </div>
+        </div>
+      </div>
+      <div className="container mx-auto px-4 py-8">
+        {loading ? (
+          <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Card key={index} className="h-96">
+                <Skeleton className="w-full h-48 bg-muted" />
+                <div className="p-6 space-y-3">
+                  <Skeleton className="h-6 w-3/4 bg-muted" />
+                  <Skeleton className="h-4 w-full bg-muted" />
+                  <Skeleton className="h-4 w-2/3 bg-muted" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">对不起！</p>
+            <p className="text-muted-foreground text-sm mt-2">“幻境界”板块由 omthins 独立运营。近日，由于一些不可抗力因素，omthins宣布关闭“幻境界”帖子发布平台（包含api接口服务）。不过无需担心，我们计划于下周重新接管“幻境界”平台。敬请期待！</p>
+          </div>
+        ) : (
+          <>
+            <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-3'}`}>
+              {posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onLike={handleLike}
+                  isLiked={isPostLiked(post)}
+                />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  上一页
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  第 {currentPage} / {totalPages} 页
+                </span>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  下一页
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      <LoginDialog
+        open={loginDialogOpen}
+        onOpenChange={setLoginDialogOpen}
+        onSuccess={checkAuth}
+      />
+    </div>
+  );
+}
