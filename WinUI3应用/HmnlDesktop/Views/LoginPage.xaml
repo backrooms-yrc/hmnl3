@@ -1,0 +1,96 @@
+<Page
+    x:Class="HmnlDesktop.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="Transparent">
+
+    <Grid Padding="20">
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" 
+              Width="400" MaxWidth="90%">
+            
+            <!-- 登录卡片 -->
+            <Grid CornerRadius="{StaticResource CornerRadiusMduiLgValue}" 
+                  Background="{ThemeResource CardBackground}" 
+                  BorderBrush="{ThemeResource CardBorderBrush}" 
+                  BorderThickness="1" 
+                  Padding="32">
+                <Grid.Effect>
+                    <DropShadowEffect BlurRadius="16" Color="#000000" Opacity="0.15" Direction="270" ShadowDepth="8" />
+                </Grid.Effect>
+                
+                <StackPanel Spacing="24">
+                    <!-- 标题 -->
+                    <StackPanel Spacing="8" HorizontalAlignment="Center">
+                        <TextBlock Text="HMNL直播讨论站" 
+                                   Style="{StaticResource TitleTextBlockStyle}" 
+                                   TextAlignment="Center" />
+                        <TextBlock Text="登录账号" 
+                                   Style="{StaticResource SubtitleTextBlockStyle}" 
+                                   TextAlignment="Center" 
+                                   Foreground="{ThemeResource TextSecondaryBrush}" />
+                    </StackPanel>
+                    
+                    <!-- 登录表单 -->
+                    <StackPanel Spacing="16">
+                        <!-- 用户名输入 -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="用户名" Style="{StaticResource BodyTextBlockStyle}" />
+                            <TextBox x:Name="UsernameBox" 
+                                     PlaceholderText="请输入用户名" 
+                                     Style="{StaticResource TextBoxStyle}" 
+                                     Text="{x:Bind ViewModel.Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        
+                        <!-- 密码输入 -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="密码" Style="{StaticResource BodyTextBlockStyle}" />
+                            <PasswordBox x:Name="PasswordBox" 
+                                        PlaceholderText="请输入密码" 
+                                        Style="{StaticResource PasswordBoxStyle}" 
+                                        PasswordChanged="OnPasswordChanged" />
+                        </StackPanel>
+                        
+                        <!-- 错误提示 -->
+                        <TextBlock x:Name="ErrorTextBlock" 
+                                   Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" 
+                                   Foreground="{ThemeResource ErrorBrush}" 
+                                   Style="{StaticResource CaptionTextBlockStyle}" 
+                                   Visibility="{x:Bind ViewModel.HasError, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    </StackPanel>
+                    
+                    <!-- 登录按钮 -->
+                    <Button x:Name="LoginButton" 
+                            Content="登录" 
+                            Click="OnLoginClick" 
+                            Style="{StaticResource PrimaryButtonStyle}" 
+                            HorizontalAlignment="Stretch" 
+                            Height="48" 
+                            IsEnabled="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource InverseBoolConverter}}" >
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="登录" Style="{StaticResource ButtonTextBlockStyle}" />
+                            </StackPanel>
+                        </Button.Content>
+                    </Button>
+                    
+                    <!-- 注册链接 -->
+                    <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                        <TextBlock Text="还没有账号？" Style="{StaticResource CaptionTextBlockStyle}" />
+                        <Button x:Name="RegisterButton" 
+                                Content="立即注册" 
+                                Click="OnRegisterClick" 
+                                Style="{StaticResource OutlineButtonStyle}" 
+                                Height="36">
+                            <Button.Content>
+                                <TextBlock Text="立即注册" Style="{StaticResource ButtonTextBlockStyle}" />
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>
