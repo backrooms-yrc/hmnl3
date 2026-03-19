@@ -1,6 +1,6 @@
 # 欢迎使用HMNL直播系统
 项目链接
-    URL:https://www.miaoda.cn/projects/app-883oyd7kz475
+    URL:https://hmnl3.20110208.xyz
 
 # HMNL直播讨论站
 
