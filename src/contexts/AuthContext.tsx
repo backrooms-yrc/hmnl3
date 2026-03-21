@@ -65,35 +65,81 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        getProfile(session.user.id).then(setProfile);
-        // 如果有session，清除访客模式
-        localStorage.removeItem('guestMode');
-        setIsGuestMode(false);
-      } else {
-        // 没有session时，检查是否是访客模式
-        const guestMode = localStorage.getItem('guestMode');
-        if (guestMode === 'true') {
-          setIsGuestMode(true);
+    let mounted = true;
+    let timeoutId: ReturnType<typeof setTimeout>;
+    let authInitialized = false;
+    
+    const initAuth = async () => {
+      try {
+        timeoutId = setTimeout(() => {
+          if (mounted && !authInitialized) {
+            console.warn('[AuthContext] Session fetch timeout, setting loading to false');
+            setLoading(false);
+          }
+        }, 10000);
+
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
+        
+        authInitialized = true;
+        clearTimeout(timeoutId);
+        
+        if (error) {
+          console.error('[AuthContext] Session fetch error:', error);
+          setLoading(false);
+          return;
+        }
+        
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          try {
+            const profileData = await getProfile(session.user.id);
+            if (mounted) {
+              setProfile(profileData);
+            }
+          } catch (profileError) {
+            console.error('[AuthContext] Profile fetch error:', profileError);
+          }
+          localStorage.removeItem('guestMode');
+          setIsGuestMode(false);
+        } else {
+          const guestMode = localStorage.getItem('guestMode');
+          if (guestMode === 'true') {
+            setIsGuestMode(true);
+          }
+        }
+        
+        if (mounted) {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('[AuthContext] Init auth error:', error);
+        clearTimeout(timeoutId);
+        if (mounted) {
+          setLoading(false);
         }
       }
-      setLoading(false);
-    });
-    // In this function, do NOT use any await calls. Use `.then()` instead to avoid deadlocks.
+    };
+    
+    initAuth();
+    
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
       setUser(session?.user ?? null);
       if (session?.user) {
-        getProfile(session.user.id).then(setProfile);
-        // 如果用户登录，退出访客模式
+        getProfile(session.user.id).then(setProfile).catch(console.error);
         exitGuestMode();
       } else {
         setProfile(null);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, []);
 
   // 通过用户ID（numeric_id或username）登录

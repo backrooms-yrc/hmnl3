@@ -50,6 +50,7 @@ const MyBroadcastPages = lazy(() => import('./pages/MyBroadcastPages'));
 const Forum = lazy(() => import('./pages/Forum'));
 const ForumDetail = lazy(() => import('./pages/ForumDetail'));
 const DocCenter = lazy(() => import('./pages/DocCenter'));
+const PersistenceManagement = lazy(() => import('./pages/PersistenceManagement'));
 
 interface RouteConfig {
   name: string;
@@ -95,6 +96,7 @@ const routes: RouteConfig[] = [
   { name: '编辑放送页面', path: '/broadcast/:id/edit', element: withSuspense(BroadcastEditor) },
   { name: '放送页面详情', path: '/broadcast/:id', element: withSuspense(BroadcastView) },
   { name: '我的放送页面', path: '/my-broadcast', element: withSuspense(MyBroadcastPages) },
+  { name: '数据持久化管理', path: '/admin/persistence', element: withSuspense(PersistenceManagement) },
 ];
 
 export default routes;
