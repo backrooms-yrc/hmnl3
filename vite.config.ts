@@ -31,7 +31,7 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/forum/, '/api/friend'),
         configure: (proxy) => {
-          proxy.on('proxyReq', (proxyReq, req) => {
+          proxy.on('proxyReq', (proxyReq) => {
             proxyReq.setHeader('Origin', 'https://hmediapost.newblock.online');
           });
         },
@@ -69,7 +69,7 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'esnext',
+    target: ['es2020', 'safari14'],
     minify: 'esbuild',
     cssMinify: true,
     rollupOptions: {
@@ -97,6 +97,9 @@ export default defineConfig({
             if (id.includes('ky') || id.includes('axios')) {
               return 'vendor-http';
             }
+            if (id.includes('pixi.js') || id.includes('pixi-live2d-display') || id.includes('@pixi')) {
+              return 'vendor-live2d';
+            }
             return 'vendor';
           }
         },
@@ -112,9 +115,11 @@ export default defineConfig({
       'react-dom',
       'react-router-dom',
       'motion',
+      'pixi.js',
+      'pixi-live2d-display',
     ],
     esbuildOptions: {
-      target: 'esnext',
+      target: ['es2020', 'safari14'],
     },
   },
 });

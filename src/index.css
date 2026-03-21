@@ -486,22 +486,22 @@
   @keyframes md-sys-motion-dialog-in {
     from {
       opacity: 0;
-      transform: scale(0.96) translateY(-10px) translateZ(0);
+      transform: translate(-50%, -50%) scale(0.96) translateZ(0);
     }
     to {
       opacity: 1;
-      transform: scale(1) translateY(0) translateZ(0);
+      transform: translate(-50%, -50%) scale(1) translateZ(0);
     }
   }
 
   @keyframes md-sys-motion-dialog-out {
     from {
       opacity: 1;
-      transform: scale(1) translateY(0) translateZ(0);
+      transform: translate(-50%, -50%) scale(1) translateZ(0);
     }
     to {
       opacity: 0;
-      transform: scale(0.96) translateY(-10px) translateZ(0);
+      transform: translate(-50%, -50%) scale(0.96) translateZ(0);
     }
   }
 
@@ -2711,6 +2711,12 @@
   [role="dialog"] .glass-dialog,
   [role="alertdialog"] .glass-dialog {
     animation: md-sys-motion-dialog-in 0.3s cubic-bezier(0.2, 0, 0, 1);
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) translateZ(0);
+    -webkit-transform: translate(-50%, -50%) translateZ(0);
+    -ms-transform: translate(-50%, -50%);
   }
 
   [role="dialog"][data-state="closing"] .glass-dialog,
@@ -2724,6 +2730,51 @@
     -webkit-backdrop-filter: blur(12px);
     background: hsl(var(--md-sys-color-surface) / 0.85);
     border: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.15);
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) translateZ(0);
+    -webkit-transform: translate(-50%, -50%) translateZ(0);
+    -ms-transform: translate(-50%, -50%);
+    margin: 0;
+  }
+
+  /* 移动端弹窗响应式适配 */
+  @media (max-width: 640px) {
+    .glass-dialog,
+    [role="dialog"] .glass-dialog,
+    [role="alertdialog"] .glass-dialog {
+      width: calc(100vw - 32px);
+      max-width: calc(100vw - 32px);
+      max-height: calc(100vh - 32px);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) translateZ(0);
+      -webkit-transform: translate(-50%, -50%) translateZ(0);
+      -ms-transform: translate(-50%, -50%);
+      margin: 0;
+    }
+  }
+
+  /* 平板端弹窗适配 */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .glass-dialog,
+    [role="dialog"] .glass-dialog,
+    [role="alertdialog"] .glass-dialog {
+      max-width: 480px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) translateZ(0);
+      -webkit-transform: translate(-50%, -50%) translateZ(0);
+      -ms-transform: translate(-50%, -50%);
+      margin: 0;
+    }
+  }
+
+  /* 确保弹窗内容区域可滚动 */
+  .glass-dialog {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* 侧边栏玻璃态效果 */
@@ -2740,5 +2791,71 @@
     -webkit-backdrop-filter: blur(8px);
     background: hsl(var(--md-sys-color-surface) / 0.7);
     border: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.2);
+  }
+}
+
+/* iOS Safari 特定修复 */
+@supports (-webkit-touch-callout: none) {
+  html {
+    height: -webkit-fill-available;
+  }
+  
+  body {
+    min-height: -webkit-fill-available;
+  }
+  
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+  
+  #root {
+    min-height: -webkit-fill-available;
+  }
+  
+  .forum-content {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .forum-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .forum-content pre {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .forum-content code {
+    word-break: break-word;
+  }
+}
+
+@supports not (-webkit-touch-callout: none) {
+  .min-h-screen {
+    min-height: 100vh;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .forum-content {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  .forum-content h1 {
+    font-size: 1.5rem;
+  }
+  
+  .forum-content h2 {
+    font-size: 1.25rem;
+  }
+  
+  .forum-content h3 {
+    font-size: 1.125rem;
   }
 }

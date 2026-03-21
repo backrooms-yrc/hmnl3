@@ -28,7 +28,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 
-type DocSection = 'user-agreement' | 'privacy-policy' | 'feature-docs' | 'api-docs';
+type DocSection = 'user-agreement' | 'privacy-policy' | 'feature-docs' | 'api-docs' | 'website-analysis';
 
 interface DocItem {
   id: string;
@@ -879,6 +879,229 @@ console.log(data.data.hls_play_url);`}
   );
 };
 
+const WebsiteAnalysisContent = () => (
+  <div className="space-y-8">
+    <section>
+      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+        <HelpCircle className="w-5 h-5 text-primary" />
+        执行摘要
+      </h2>
+      <div className="space-y-3 text-muted-foreground leading-relaxed">
+        <p>HMNL直播系统是一个综合性的内容管理与直播平台，集成了直播频道管理、社区论坛、世界观创作、AI对话等多种功能模块。平台采用现代化的前端技术栈（React 18 + TypeScript + Vite），遵循 Material Design 3 设计规范，提供流畅的用户体验。</p>
+        <div className="bg-primary/5 rounded-lg p-4 mt-4">
+          <p className="font-medium text-foreground">核心价值主张</p>
+          <p className="mt-2">"一站式直播与内容创作平台" - HMNL直播系统将直播、社区、创作工具整合于一体，为内容创作者和观众提供无缝的互动体验。</p>
+        </div>
+      </div>
+    </section>
+
+    <Separator />
+
+    <section>
+      <h2 className="text-xl font-semibold mb-4">核心功能模块</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary" />
+              用户认证模块
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="text-sm text-muted-foreground space-y-1">
+              <li>• 用户名密码登录</li>
+              <li>• 手机验证码登录</li>
+              <li>• 人脸识别登录</li>
+              <li>• 访客模式</li>
+              <li>• 实名认证</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary" />
+              直播频道模块
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="text-sm text-muted-foreground space-y-1">
+              <li>• 频道列表与播放</li>
+              <li>• RTMP推流服务</li>
+              <li>• HLS/FLV播放支持</li>
+              <li>• 实时弹幕互动</li>
+              <li>• 直播管理后台</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary" />
+              社区论坛模块
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="text-sm text-muted-foreground space-y-1">
+              <li>• Markdown帖子编辑</li>
+              <li>• 评论系统</li>
+              <li>• 搜索功能</li>
+              <li>• 举报机制</li>
+              <li>• 实时聊天室</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileText className="w-4 h-4 text-primary" />
+              创作工具模块
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="text-sm text-muted-foreground space-y-1">
+              <li>• 世界观创作工具</li>
+              <li>• 直播页面定制</li>
+              <li>• AI对话集成</li>
+              <li>• 天气服务</li>
+              <li>• 地图导航</li>
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+
+    <Separator />
+
+    <section>
+      <h2 className="text-xl font-semibold mb-4">目标受众</h2>
+      <div className="space-y-4">
+        <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <span className="text-sm font-medium text-primary">创</span>
+          </div>
+          <div>
+            <p className="font-medium">内容创作者</p>
+            <p className="text-sm text-muted-foreground">拥有专业技能或特长，希望分享内容。核心需求：直播推流、粉丝互动、内容管理。</p>
+          </div>
+        </div>
+        <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <span className="text-sm font-medium text-primary">观</span>
+          </div>
+          <div>
+            <p className="font-medium">观众用户</p>
+            <p className="text-sm text-muted-foreground">喜欢观看直播和视频内容。核心需求：观看直播、弹幕互动、关注主播。</p>
+          </div>
+        </div>
+        <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <span className="text-sm font-medium text-primary">社</span>
+          </div>
+          <div>
+            <p className="font-medium">社区用户</p>
+            <p className="text-sm text-muted-foreground">活跃的互联网用户，喜欢讨论交流。核心需求：发帖讨论、评论互动、信息获取。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <Separator />
+
+    <section>
+      <h2 className="text-xl font-semibold mb-4">竞争优势</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="flex items-center gap-2 p-3 bg-green-500/10 rounded-lg">
+          <CheckCircle className="w-4 h-4 text-green-500" />
+          <span className="text-sm">功能全面整合</span>
+        </div>
+        <div className="flex items-center gap-2 p-3 bg-green-500/10 rounded-lg">
+          <CheckCircle className="w-4 h-4 text-green-500" />
+          <span className="text-sm">技术架构先进</span>
+        </div>
+        <div className="flex items-center gap-2 p-3 bg-green-500/10 rounded-lg">
+          <CheckCircle className="w-4 h-4 text-green-500" />
+          <span className="text-sm">用户体验优秀</span>
+        </div>
+        <div className="flex items-center gap-2 p-3 bg-green-500/10 rounded-lg">
+          <CheckCircle className="w-4 h-4 text-green-500" />
+          <span className="text-sm">社区氛围良好</span>
+        </div>
+        <div className="flex items-center gap-2 p-3 bg-green-500/10 rounded-lg">
+          <CheckCircle className="w-4 h-4 text-green-500" />
+          <span className="text-sm">持续迭代更新</span>
+        </div>
+        <div className="flex items-center gap-2 p-3 bg-green-500/10 rounded-lg">
+          <CheckCircle className="w-4 h-4 text-green-500" />
+          <span className="text-sm">Material Design 3规范</span>
+        </div>
+      </div>
+    </section>
+
+    <Separator />
+
+    <section>
+      <h2 className="text-xl font-semibold mb-4">商业价值</h2>
+      <div className="space-y-3 text-muted-foreground leading-relaxed">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="text-center p-4 bg-muted/30 rounded-lg">
+            <p className="text-2xl font-bold text-foreground">订阅服务</p>
+            <p className="text-sm mt-1">会员订阅收入</p>
+          </div>
+          <div className="text-center p-4 bg-muted/30 rounded-lg">
+            <p className="text-2xl font-bold text-foreground">虚拟货币</p>
+            <p className="text-sm mt-1">平台内充值</p>
+          </div>
+          <div className="text-center p-4 bg-muted/30 rounded-lg">
+            <p className="text-2xl font-bold text-foreground">增值服务</p>
+            <p className="text-sm mt-1">高级功能付费</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <Separator />
+
+    <section>
+      <h2 className="text-xl font-semibold mb-4">潜在改进领域</h2>
+      <div className="space-y-3">
+        <div className="flex items-center gap-3 p-3 border rounded-lg">
+          <Badge variant="destructive">高</Badge>
+          <span>移动端体验优化</span>
+        </div>
+        <div className="flex items-center gap-3 p-3 border rounded-lg">
+          <Badge variant="destructive">高</Badge>
+          <span>搜索功能增强</span>
+        </div>
+        <div className="flex items-center gap-3 p-3 border rounded-lg">
+          <Badge variant="destructive">高</Badge>
+          <span>个性化推荐系统</span>
+        </div>
+        <div className="flex items-center gap-3 p-3 border rounded-lg">
+          <Badge variant="secondary">中</Badge>
+          <span>离线功能支持</span>
+        </div>
+        <div className="flex items-center gap-3 p-3 border rounded-lg">
+          <Badge variant="secondary">中</Badge>
+          <span>多语言国际化</span>
+        </div>
+      </div>
+    </section>
+
+    <div className="bg-muted/50 rounded-lg p-4 mt-8">
+      <p className="text-sm text-muted-foreground text-center">
+        网站分析报告最后更新时间：2026-03-19
+      </p>
+      <p className="text-sm text-muted-foreground text-center mt-1">
+        完整报告请访问：<ExternalLink className="w-3 h-3 inline mx-1" /><a href="/docs/网站分析报告.md" className="text-primary hover:underline">网站分析报告.md</a>
+      </p>
+    </div>
+  </div>
+);
+
 const docSections: Record<DocSection, { title: string; icon: React.ReactNode; description: string }> = {
   'user-agreement': {
     title: '用户协议',
@@ -899,6 +1122,11 @@ const docSections: Record<DocSection, { title: string; icon: React.ReactNode; de
     title: 'API文档',
     icon: <List className="w-5 h-5" />,
     description: '开发者接口文档与集成指南'
+  },
+  'website-analysis': {
+    title: '网站分析报告',
+    icon: <HelpCircle className="w-5 h-5" />,
+    description: '全面分析网站功能、用户受益与商业价值'
   }
 };
 
@@ -922,7 +1150,8 @@ export default function DocCenter() {
       'user-agreement': '用户协议',
       'privacy-policy': '隐私政策',
       'feature-docs': '功能文档',
-      'api-docs': 'API文档'
+      'api-docs': 'API文档',
+      'website-analysis': '网站分析报告'
     };
     
     const content = document.querySelector('.doc-content')?.textContent || '';
@@ -948,6 +1177,8 @@ export default function DocCenter() {
         return <FeatureDocsContent />;
       case 'api-docs':
         return <ApiDocsContent />;
+      case 'website-analysis':
+        return <WebsiteAnalysisContent />;
     }
   };
 
