@@ -352,8 +352,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
           </main>
 
           {isMobile && (
-            <nav className="fixed bottom-0 left-0 right-0 z-50 glass-bottombar safe-bottom">
-              <div className="flex items-center justify-between h-16 px-1">
+            <nav className="glass-bottombar">
+              <div className="bottom-nav-container">
                 {bottomNavItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = location.pathname === item.path;
@@ -365,7 +365,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
                         key={item.path}
                         to={item.path}
                         className={cn(
-                          "flex flex-col items-center justify-center -mt-5 flex-shrink-0",
+                          "bottom-nav-center-wrapper",
                           restricted && "opacity-38 pointer-events-none"
                         )}
                         onClick={(e) => {
@@ -374,14 +374,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
                           }
                         }}
                       >
-                        <div className={cn(
-                          "w-12 h-12 md-sys-shape-corner-full flex items-center justify-center",
-                          "bg-[hsl(var(--md-sys-color-primary-container))] md-sys-elevation-3",
-                          "md-sys-state-layer bottom-nav-center-btn"
-                        )}>
+                        <div className="bottom-nav-center-btn">
                           <Icon className="bottom-nav-center-icon text-[hsl(var(--md-sys-color-on-primary-container))]" />
                         </div>
-                        <span className="md-sys-typescale-label-small mt-0.5 text-[hsl(var(--md-sys-color-on-surface-variant))] whitespace-nowrap">
+                        <span className="bottom-nav-center-label">
                           {item.label}
                         </span>
                       </Link>
@@ -393,10 +389,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
                       key={item.path}
                       to={item.path}
                       className={cn(
-                        "flex flex-col items-center justify-center gap-0.5 flex-1 min-w-[48px] h-14 md-sys-shape-corner-lg md-sys-state-layer bottom-nav-item",
-                        isActive 
-                          ? "text-[hsl(var(--md-sys-color-on-secondary-container))] bg-[hsl(var(--md-sys-color-secondary-container))]" 
-                          : "text-[hsl(var(--md-sys-color-on-surface-variant))]",
+                        "bottom-nav-item",
+                        isActive ? "bottom-nav-item-active" : "bottom-nav-item-inactive",
                         restricted && "opacity-38 pointer-events-none"
                       )}
                       onClick={(e) => {
@@ -405,17 +399,27 @@ export default function MainLayout({ children }: MainLayoutProps) {
                         }
                       }}
                     >
-                      <div className="relative w-6 h-6 flex items-center justify-center flex-shrink-0">
-                        <Icon className="bottom-nav-icon" />
+                      <div className="bottom-nav-icon-wrapper">
+                        <Icon className={cn(
+                          "bottom-nav-icon",
+                          isActive 
+                            ? "text-[hsl(var(--md-sys-color-on-secondary-container))]" 
+                            : "text-[hsl(var(--md-sys-color-on-surface-variant))]"
+                        )} />
                         {!restricted && item.badge !== undefined && item.badge > 0 && (
-                          <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 md-sys-shape-corner-full bg-[hsl(var(--md-sys-color-error))] flex items-center justify-center">
-                            <span className="md-sys-typescale-label-small text-[hsl(var(--md-sys-color-on-error))] leading-none text-[10px]">
-                              {item.badge > 9 ? '9+' : item.badge}
-                            </span>
+                          <div className="bottom-nav-badge">
+                            {item.badge > 99 ? '99+' : item.badge}
                           </div>
                         )}
                       </div>
-                      <span className="md-sys-typescale-label-small whitespace-nowrap overflow-hidden text-ellipsis max-w-full px-0.5">{item.label}</span>
+                      <span className={cn(
+                        "bottom-nav-label",
+                        isActive 
+                          ? "text-[hsl(var(--md-sys-color-on-secondary-container))]" 
+                          : "text-[hsl(var(--md-sys-color-on-surface-variant))]"
+                      )}>
+                        {item.label}
+                      </span>
                     </Link>
                   );
                 })}
