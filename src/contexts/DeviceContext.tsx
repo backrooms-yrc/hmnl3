@@ -1,33 +1,24 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { isFAHMNLApp } from '@/utils/device-detect';
 
-/**
- * 设备类型
- * mobile: 手机
- * desktop: PC和iPad
- */
 type DeviceType = 'mobile' | 'desktop';
 
 interface DeviceContextType {
   deviceType: DeviceType;
   isMobile: boolean;
   isDesktop: boolean;
+  isFAHMNL: boolean;
 }
 
 const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
 
-/**
- * 检测设备类型（同步执行）
- * 只有明确的手机设备才返回mobile，iPad和PC都返回desktop
- */
 function detectDeviceType(): DeviceType {
   if (typeof window === 'undefined') return 'desktop';
   
   const ua = navigator.userAgent.toLowerCase();
   
-  // iPad明确视为桌面端
   if (ua.includes('ipad')) return 'desktop';
   
-  // 检测手机设备
   const mobileKeywords = [
     'android',
     'webos', 
@@ -39,7 +30,6 @@ function detectDeviceType(): DeviceType {
   
   const isMobileDevice = mobileKeywords.some(keyword => ua.includes(keyword));
   
-  // 如果包含mobile但是iPad，仍然返回desktop
   if (ua.includes('mobile') && !ua.includes('ipad')) {
     return 'mobile';
   }
@@ -48,11 +38,9 @@ function detectDeviceType(): DeviceType {
 }
 
 export function DeviceProvider({ children }: { children: ReactNode }) {
-  // 同步检测，避免闪烁
   const [deviceType] = useState<DeviceType>(() => {
     const detected = detectDeviceType();
     
-    // 添加调试日志
     console.log('[设备检测]', {
       userAgent: typeof window !== 'undefined' ? navigator.userAgent : 'SSR',
       检测结果: detected,
@@ -63,10 +51,36 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
     return detected;
   });
 
+  const [isFAHMNL, setIsFAHMNL] = useState<boolean>(() => {
+    return isFAHMNLApp();
+  });
+
+  useEffect(() => {
+    const checkFAHMNL = () => {
+      const result = isFAHMNLApp();
+      setIsFAHMNL(result);
+      
+      if (result) {
+        document.documentElement.setAttribute('data-app-mode', 'fahmnl');
+        document.body.classList.add('fahmnl-app-mode');
+      } else {
+        document.documentElement.removeAttribute('data-app-mode');
+        document.body.classList.remove('fahmnl-app-mode');
+      }
+    };
+
+    checkFAHMNL();
+    
+    const interval = setInterval(checkFAHMNL, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   const value: DeviceContextType = {
     deviceType,
     isMobile: deviceType === 'mobile',
     isDesktop: deviceType === 'desktop',
+    isFAHMNL,
   };
 
   return (

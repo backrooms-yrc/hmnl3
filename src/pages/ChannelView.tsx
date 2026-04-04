@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ChatRoom } from '@/components/ChatRoom';
 import { ChannelChatRoom } from '@/components/ChannelChatRoom';
 import { StreamPlayer } from '@/components/home/StreamPlayer';
+import { ShareImageButton } from '@/components/share';
 import { 
   X, Maximize2, Minimize2, Heart, Share2, ArrowLeft, 
   Radio, MessageSquare, Copy, Check, AlertCircle
@@ -326,7 +327,7 @@ export default function ChannelView() {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            variant="outline"
+                            variant="outlined"
                             size="icon"
                             onClick={handleShare}
                           >
@@ -342,6 +343,15 @@ export default function ChannelView() {
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
+
+                    <ShareImageButton
+                      channelName={channel.name}
+                      channelDescription={channel.description}
+                      channelIcon={channel.cover_image}
+                      channelId={channel.id}
+                      variant="outlined"
+                      size="icon"
+                    />
                   </div>
                 </div>
               </CardHeader>
