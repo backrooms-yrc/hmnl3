@@ -185,13 +185,49 @@ export default {
                         opacity: '1',
                         transform: 'translateX(0)'
                     }
+                },
+                'sheet-slide-in-left': {
+                    from: {
+                        transform: 'translateX(-100%) translateZ(0)'
+                    },
+                    to: {
+                        transform: 'translateX(0) translateZ(0)'
+                    }
+                },
+                'sheet-slide-out-left': {
+                    from: {
+                        transform: 'translateX(0) translateZ(0)'
+                    },
+                    to: {
+                        transform: 'translateX(-100%) translateZ(0)'
+                    }
+                },
+                'sheet-fade-in': {
+                    from: {
+                        opacity: '0'
+                    },
+                    to: {
+                        opacity: '1'
+                    }
+                },
+                'sheet-fade-out': {
+                    from: {
+                        opacity: '1'
+                    },
+                    to: {
+                        opacity: '0'
+                    }
                 }
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
                 'accordion-up': 'accordion-up 0.2s ease-out',
                 'fade-in': 'fade-in 0.5s ease-out',
-                'slide-in': 'slide-in 0.5s ease-out'
+                'slide-in': 'slide-in 0.5s ease-out',
+                'sheet-slide-in-left': 'sheet-slide-in-left 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+                'sheet-slide-out-left': 'sheet-slide-out-left 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+                'sheet-fade-in': 'sheet-fade-in 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+                'sheet-fade-out': 'sheet-fade-out 200ms cubic-bezier(0.4, 0, 0.2, 1)'
             }
         }
     },

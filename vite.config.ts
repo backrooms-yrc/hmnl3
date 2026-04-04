@@ -4,11 +4,12 @@ import svgr from 'vite-plugin-svgr';
 import path from 'path';
 
 import { miaodaDevPlugin } from "miaoda-sc-plugin";
+import { shareImagePlugin } from "./server/share-image-plugin";
 
 export default defineConfig({
   plugins: [react(), svgr({
       svgrOptions: {
-        icon: true, exportType: 'named', namedExport: 'ReactComponent', }, }), miaodaDevPlugin()],
+        icon: true, exportType: 'named', namedExport: 'ReactComponent', }, }), miaodaDevPlugin(), shareImagePlugin()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -16,8 +17,8 @@ export default defineConfig({
   },
   server: {
     host: '0.0.0.0',
-    port: 0,
-    strictPort: false,
+    port: 5173,
+    strictPort: true,
     cors: {
       origin: '*',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],

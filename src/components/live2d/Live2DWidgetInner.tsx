@@ -46,10 +46,12 @@ export function Live2DWidgetInner({
   const modelRef = useRef<Live2DModel | null>(null);
   const mountedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
   
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
+  const [isClosed, setIsClosed] = useState(false);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -70,6 +72,9 @@ export function Live2DWidgetInner({
     
     return () => {
       mountedRef.current = false;
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
       if (containerRef.current && containerRef.current.parentNode) {
         containerRef.current.parentNode.removeChild(containerRef.current);
       }
@@ -77,7 +82,7 @@ export function Live2DWidgetInner({
   }, [position]);
 
   useEffect(() => {
-    if (!portalContainer) return;
+    if (!portalContainer || isClosed) return;
     
     let destroyed = false;
 
@@ -167,6 +172,15 @@ export function Live2DWidgetInner({
             position: { x: model.x, y: model.y }
           });
         }
+
+        const animate = () => {
+          if (!destroyed && mountedRef.current && !isClosed) {
+            app?.ticker?.update();
+            animationFrameRef.current = requestAnimationFrame(animate);
+          }
+        };
+
+        animate();
       } catch (error) {
         if (mountedRef.current && !destroyed) {
           console.error('[Live2D] Load failed:', error);
@@ -180,6 +194,10 @@ export function Live2DWidgetInner({
 
     return () => {
       destroyed = true;
+      
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
       
       if (modelRef.current) {
         try {
@@ -199,9 +217,13 @@ export function Live2DWidgetInner({
         appRef.current = null;
       }
     };
-  }, [modelPath, width, height, portalContainer]);
+  }, [modelPath, width, height, portalContainer, isClosed]);
 
-  if (!portalContainer) {
+  const handleClose = () => {
+    setIsClosed(true);
+  };
+
+  if (!portalContainer || isClosed) {
     return null;
   }
 
@@ -263,6 +285,35 @@ export function Live2DWidgetInner({
           display: isLoading || loadError ? 'none' : 'block',
         }}
       />
+      
+      <button
+        onClick={handleClose}
+        style={{
+          position: 'absolute',
+          top: 4,
+          right: 4,
+          width: 24,
+          height: 24,
+          background: 'rgba(0, 0, 0, 0.5)',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          borderRadius: '50%',
+          color: 'white',
+          cursor: 'pointer',
+          display: isLoading || loadError ? 'none' : 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 14,
+          fontWeight: 'bold',
+          lineHeight: 1,
+          padding: 0,
+          margin: 0,
+          zIndex: 100,
+        }}
+        aria-label="关闭Live2D"
+        title="关闭Live2D"
+      >
+        ×
+      </button>
     </div>,
     portalContainer
   );

@@ -32,3 +32,32 @@ export function isMobileDevice(): boolean {
 export function getDeviceType(): 'mobile' | 'pc' {
   return isMobileDevice() ? 'mobile' : 'pc';
 }
+
+export function isFAHMNLApp(): boolean {
+  if (typeof window === 'undefined') return false;
+  
+  const ua = navigator.userAgent;
+  const uaLower = ua.toLowerCase();
+  
+  return uaLower.includes('fahmnl');
+}
+
+export function getAppMode(): 'fahmnl' | 'normal' {
+  return isFAHMNLApp() ? 'fahmnl' : 'normal';
+}
+
+export interface DeviceInfo {
+  isMobile: boolean;
+  isFAHMNL: boolean;
+  deviceType: 'mobile' | 'pc';
+  appMode: 'fahmnl' | 'normal';
+}
+
+export function getDeviceInfo(): DeviceInfo {
+  return {
+    isMobile: isMobileDevice(),
+    isFAHMNL: isFAHMNLApp(),
+    deviceType: getDeviceType(),
+    appMode: getAppMode(),
+  };
+}
