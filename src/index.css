@@ -628,7 +628,7 @@
     background: currentColor;
     opacity: 0;
     pointer-events: none;
-    transition: opacity var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+    transition: opacity 60ms linear;
   }
 
   .md-sys-state-layer:hover::before {
@@ -1231,8 +1231,10 @@
   }
 
   .glass-bottombar {
-    background: hsl(var(--md-sys-color-surface-container) / 0.97);
-    border-top: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.15);
+    background: hsl(var(--md-sys-color-surface-container) / 0.85);
+    backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+    -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+    border-top: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.2);
     box-shadow: var(--md-sys-elevation-level2);
     transform: translateZ(0);
     will-change: transform;
@@ -1248,11 +1250,18 @@
     box-sizing: border-box;
   }
 
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass-bottombar {
+      background: hsl(var(--md-sys-color-surface-container) / 0.97);
+    }
+  }
+
   @media (min-width: 768px) {
     .glass-bottombar {
-      background: hsl(var(--md-sys-color-surface-container) / 0.85);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      background: hsl(var(--md-sys-color-surface-container) / 0.82);
+      backdrop-filter: blur(24px) saturate(200%) brightness(1.05);
+      -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.05);
+      border-top: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.25);
     }
   }
 
@@ -1704,11 +1713,16 @@
   /* 毛玻璃按钮 */
   .glass-button {
     background: hsl(var(--md-sys-color-primary) / 0.1);
-    backdrop-filter: blur(var(--glass-blur-light));
-    -webkit-backdrop-filter: blur(var(--glass-blur-light));
     border: 1px solid hsl(var(--md-sys-color-primary) / 0.2);
     border-radius: var(--md-sys-shape-corner-full);
-    transition: all var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+    transition: background-color 80ms linear, opacity 80ms linear;
+  }
+
+  @media (min-width: 768px) {
+    .glass-button {
+      backdrop-filter: blur(var(--glass-blur-light));
+      -webkit-backdrop-filter: blur(var(--glass-blur-light));
+    }
   }
 
   .glass-button:hover {
@@ -2813,10 +2827,16 @@
 
   /* 玻璃态按钮 */
   .glass-button {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    background: hsl(var(--md-sys-color-surface) / 0.7);
+    background: hsl(var(--md-sys-color-surface) / 0.92);
     border: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.2);
+  }
+
+  @media (min-width: 768px) {
+    .glass-button {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: hsl(var(--md-sys-color-surface) / 0.7);
+    }
   }
 }
 
@@ -2825,37 +2845,55 @@
   html {
     height: -webkit-fill-available;
   }
-  
+
   body {
     min-height: -webkit-fill-available;
   }
-  
+
   .min-h-screen {
     min-height: -webkit-fill-available;
   }
-  
+
   #root {
     min-height: -webkit-fill-available;
   }
-  
+
+  /* iOS 毛玻璃优化 - 强制GPU加速 */
+  .glass-bottombar {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+  }
+
+  /* iOS 底栏安全区域增强 */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .glass-bottombar {
+      padding-bottom: env(safe-area-inset-bottom, 0);
+      height: calc(80px + env(safe-area-inset-bottom, 0));
+    }
+  }
+
   .forum-content {
     -webkit-overflow-scrolling: touch;
     overflow-x: hidden;
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
-  
+
   .forum-content img {
     max-width: 100%;
     height: auto;
     display: block;
   }
-  
+
   .forum-content pre {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .forum-content code {
     word-break: break-word;
   }
@@ -2864,6 +2902,27 @@
 @supports not (-webkit-touch-callout: none) {
   .min-h-screen {
     min-height: 100vh;
+  }
+}
+
+/* Android Chrome 毛玻璃优化 */
+@supports (backdrop-filter: blur(1px)) and (not (-webkit-touch-callout: none)) {
+  .glass-bottombar {
+    backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+    -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+    background: hsl(var(--md-sys-color-surface-container) / 0.85);
+  }
+}
+
+/* 低版本浏览器降级方案 */
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-bottombar {
+    background: linear-gradient(
+      to top,
+      hsl(var(--md-sys-color-surface-container) / 0.98) 0%,
+      hsl(var(--md-sys-color-surface-container) / 0.92) 100%
+    );
+    border-top: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.25);
   }
 }
 
@@ -3020,6 +3079,155 @@
     .bottom-nav-icon-wrapper,
     .bottom-nav-icon,
     .bottom-nav-icon svg {
+    }
+  }
+}
+
+/* ========== Sheet 侧边栏动画优化（纯CSS transform）========== */
+@layer utilities {
+  [data-slot="sheet-overlay"] {
+    opacity: 0;
+    transition: opacity 150ms linear;
+  }
+
+  [data-slot="sheet-overlay"][data-state="open"] {
+    opacity: 1;
+  }
+
+  [data-slot="sheet-content"] {
+    willChange: transform, opacity;
+  }
+
+  [data-slot="sheet-content"][data-state="open"] {
+    transform: translateX(0) translateZ(0);
+  }
+
+  [data-slot="sheet-content"][data-side="left"][data-state="closed"] {
+    transform: translateX(-100%) translateZ(0);
+  }
+
+  [data-slot="sheet-content"][data-side="right"][data-state="closed"] {
+    transform: translateX(100%) translateZ(0);
+  }
+
+  [data-slot="sheet-content"][data-side="top"][data-state="closed"] {
+    opacity: 0;
+  }
+
+  [data-slot="sheet-content"][data-side="bottom"][data-state="closed"] {
+    opacity: 0;
+  }
+
+  .nav-menu-trigger-btn {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: transform 80ms linear, background-color 80ms linear, box-shadow 80ms linear;
+    will-change: transform;
+    contain: layout style;
+  }
+
+  .nav-menu-trigger-btn:active {
+    transform: scale(0.92) translateZ(0) !important;
+    transition: transform 50ms linear !important;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav-menu-trigger-btn:hover {
+      transform: scale(1.05) translateZ(0);
+      box-shadow: var(--md-sys-elevation-level3);
+    }
+
+    .nav-menu-trigger-btn:active {
+      transform: scale(0.92) translateZ(0) !important;
+    }
+  }
+}
+
+/* ========== 移动端导航抽屉组件样式 ========== */
+@layer components {
+  .nav-trigger-button {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .nav-trigger-button:focus-visible {
+    box-shadow: 0 0 0 3px hsl(var(--md-sys-color-primary) / 0.3);
+  }
+
+  .nav-trigger-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: currentColor;
+    opacity: 0.3;
+    transform: scale(0);
+    transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav-trigger-ripple-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .nav-trigger-icon {
+    display: block;
+    color: inherit;
+  }
+
+  /* 导航抽屉容器优化 */
+  [class*="MobileNavDrawer"] > div:last-child {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* 触摸反馈增强 */
+  @media (hover: none) and (pointer: coarse) {
+    .nav-trigger-button {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+  }
+
+  /* 桌面端悬停效果 */
+  @media (hover: hover) and (pointer: fine) {
+    .nav-trigger-button:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--md-sys-elevation-level3);
+      transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-trigger-button:active {
+      transform: scale(0.95) !important;
+    }
+  }
+
+  /* 动画性能优化 */
+  .nav-trigger-button,
+  .nav-trigger-ripple,
+  .nav-trigger-icon line {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 减少动画偏好支持 */
+  @media (prefers-reduced-motion: reduce) {
+    .nav-trigger-ripple {
+      animation: none;
+      transition: none;
+    }
+
+    .nav-trigger-icon {
+      transition: none !important;
+    }
+
+    .nav-trigger-icon line {
+      transition: none !important;
     }
   }
 }

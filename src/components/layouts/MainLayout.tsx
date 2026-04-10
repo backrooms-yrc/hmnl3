@@ -3,18 +3,19 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePerformanceMode } from '@/contexts/PerformanceModeContext';
 import { useDevice } from '@/contexts/DeviceContext';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { PopupAnnouncementDialog } from '@/components/PopupAnnouncementDialog';
+import { MobileNavDrawer, NavTriggerButton } from '@/components/mobile';
+import useSidebarPerformanceMonitor from '@/hooks/useSidebarPerformanceMonitor';
 
-import { 
-  Home, 
-  MessageSquare, 
-  PenSquare, 
-  User, 
-  Bell, 
-  LogOut, 
+import {
+  Home,
+  MessageSquare,
+  PenSquare,
+  User,
+  Bell,
+  LogOut,
   Menu,
   Shield,
   FileText,
@@ -412,39 +413,59 @@ export default function MainLayout({ children }: MainLayoutProps) {
           )}
 
           {shouldUseMobileView && !shouldHideSidebarTrigger && (
-            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-              <SheetTrigger asChild>
-                <Button
-                  variant="icon"
-                  size="icon"
-                  className="fixed top-4 left-4 z-40 glass-button md-sys-elevation-2"
-                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
-                >
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="left"
-                className="p-0 w-72 flex flex-col overflow-hidden sidebar-mobile"
-              >
-                <div className="flex items-center justify-between p-4 border-b border-[hsl(var(--md-sys-color-outline-variant)/0.2)] shrink-0">
-                  <span className="md-sys-typescale-title-medium">导航菜单</span>
-                  <Button variant="icon" size="icon-sm" onClick={() => setSheetOpen(false)}>
-                    <X className="w-5 h-5" />
-                  </Button>
-                </div>
-                <NavContent
-                  profile={profile}
-                  performanceMode={performanceMode}
-                  setPerformanceMode={setPerformanceMode}
-                  handleLogout={handleLogout}
-                  navItems={navItems}
-                  isRestricted={isRestricted}
-                  onNavItemClick={handleNavItemClick}
-                  currentPath={location.pathname}
+            <>
+              <div className="fixed top-4 left-4 z-40">
+                <NavTriggerButton
+                  onClick={() => setSheetOpen(true)}
+                  isActive={sheetOpen}
+                  size="md"
+                  variant="glass"
+                  className={cn(
+                    "glass-button md-sys-elevation-2",
+                    "bg-[hsl(var(--md-sys-color-primary)/0.1)]",
+                    "border border-[hsl(var(--md-sys-color-primary)/0.2)]",
+                    "text-[hsl(var(--md-sys-color-primary))]",
+                    "hover:bg-[hsl(var(--md-sys-color-primary)/0.15)]"
+                  )}
                 />
-              </SheetContent>
-            </Sheet>
+              </div>
+
+              <MobileNavDrawer
+                isOpen={sheetOpen}
+                onClose={() => setSheetOpen(false)}
+                side="left"
+                width={288}
+                overlayOpacity={0.6}
+                animationDuration={300}
+                dragThreshold={100}
+                edgeWidth={20}
+                enableEdgeSwipe={true}
+              >
+                <div className="flex flex-col h-full bg-[hsl(var(--md-sys-color-surface))]">
+                  <div className="flex items-center justify-between p-4 border-b border-[hsl(var(--md-sys-color-outline-variant)/0.2)] shrink-0">
+                    <span className="md-sys-typescale-title-medium text-[hsl(var(--md-sys-color-on-surface))]">导航菜单</span>
+                    <Button
+                      variant="icon"
+                      size="icon-sm"
+                      onClick={() => setSheetOpen(false)}
+                      className="rounded-full hover:bg-[hsl(var(--md-sys-color-surface-variant))]"
+                    >
+                      <X className="w-5 h-5 text-[hsl(var(--md-sys-color-on-surface-variant))]" />
+                    </Button>
+                  </div>
+                  <NavContent
+                    profile={profile}
+                    performanceMode={performanceMode}
+                    setPerformanceMode={setPerformanceMode}
+                    handleLogout={handleLogout}
+                    navItems={navItems}
+                    isRestricted={isRestricted}
+                    onNavItemClick={handleNavItemClick}
+                    currentPath={location.pathname}
+                  />
+                </div>
+              </MobileNavDrawer>
+            </>
           )}
 
           <main className={cn(

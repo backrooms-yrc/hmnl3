@@ -29,16 +29,19 @@ const SheetOverlay = React.memo(React.forwardRef<
 >(({ className, enableBlur = false, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      "fixed inset-0 z-50 bg-black/60",
-      "data-[state=open]:animate-sheet-fade-in data-[state=closed]:animate-sheet-fade-out"
+      "fixed inset-0 z-50 bg-black/60"
     )}
     data-slot="sheet-overlay"
     style={{
+      opacity: 0,
+      transition: 'opacity 80ms linear',
       willChange: 'opacity',
-      contain: 'layout style paint',
+      contain: 'strict',
       transform: 'translateZ(0)',
       backfaceVisibility: 'hidden',
     }}
+    data-state-closed-style={{ opacity: 0 }}
+    data-state-open-style={{ opacity: 1 }}
     {...props}
     ref={ref}
   />
@@ -52,12 +55,12 @@ const sheetVariants = cva(
   {
     variants: {
       side: {
-        top: "inset-x-0 top-0 border-b data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top",
+        top: "inset-x-0 top-0 border-b",
         bottom:
-          "inset-x-0 bottom-0 border-t data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
-        left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=open]:animate-sheet-slide-in-left data-[state=closed]:animate-sheet-slide-out-left sm:max-w-sm !ml-0 !pl-0",
+          "inset-x-0 bottom-0 border-t",
+        left: "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm !ml-0 !pl-0",
         right:
-          "inset-y-0 right-0 h-full w-3/4 border-l data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm !mr-0 !pr-0",
+          "inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm !mr-0 !pr-0",
       },
     },
     defaultVariants: {
@@ -84,9 +87,18 @@ const SheetContent = React.memo(React.forwardRef<
       className={cn(sheetVariants({ side }), className)}
       data-slot="sheet-content"
       style={{
-        willChange: 'transform',
+        ...(side === 'left' ? {
+          transform: 'translateX(-100%) translateZ(0)',
+          transition: 'transform 250ms cubic-bezier(0.2, 0, 0, 1)',
+        } : side === 'right' ? {
+          transform: 'translateX(100%) translateZ(0)',
+          transition: 'transform 250ms cubic-bezier(0.2, 0, 0, 1)',
+        } : {
+          opacity: 0,
+          transition: 'opacity 200ms linear',
+        }),
+        willChange: 'transform, opacity',
         contain: 'layout style paint',
-        transform: 'translateZ(0)',
         backfaceVisibility: 'hidden',
         WebkitFontSmoothing: 'antialiased',
         touchAction: 'pan-y',
@@ -94,7 +106,7 @@ const SheetContent = React.memo(React.forwardRef<
       {...props}
     >
       <SheetPrimitive.Close
-        className="absolute right-4 top-4 rounded-mdui-lg p-1.5 opacity-70 ring-offset-background transition-opacity duration-100 hover:opacity-100 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none active:scale-95"
+        className="absolute right-4 top-4 rounded-mdui-lg p-1.5 opacity-70 ring-offset-background hover:opacity-100 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none active:scale-95"
       >
         <X className="h-4 w-4" />
         <span className="sr-only">关闭</span>
