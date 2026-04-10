@@ -23,9 +23,9 @@ const FPS_THRESHOLDS = {
 };
 
 const DURATION_THRESHOLDS = {
-  pass: 300,
-  warning: 500,
-  fail: 1000,
+  pass: 100,
+  warning: 200,
+  fail: 500,
 };
 
 export function usePerformanceTest() {

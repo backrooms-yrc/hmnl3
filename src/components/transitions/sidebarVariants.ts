@@ -7,20 +7,18 @@ export const sidebarVariants = {
     opacity: 1,
     transform: 'translateX(0) translateZ(0)',
     transition: {
-      type: 'spring',
-      stiffness: 400,
-      damping: 35,
-      mass: 0.5,
+      type: 'tween',
+      duration: 0.1,
+      ease: [0.2, 0, 0, 1],
     },
   },
   exit: (side: 'left' | 'right') => ({
     opacity: 0,
     transform: `translateX(${side === 'left' ? -280 : 280}px) translateZ(0)`,
     transition: {
-      type: 'spring',
-      stiffness: 500,
-      damping: 40,
-      mass: 0.4,
+      type: 'tween',
+      duration: 0.08,
+      ease: [0.4, 0, 1, 1],
     },
   }),
 };
@@ -32,15 +30,15 @@ export const overlayVariants = {
   enter: {
     opacity: 1,
     transition: {
-      duration: 0.2,
-      ease: 'easeOut',
+      duration: 0.1,
+      ease: [0.2, 0, 0, 1],
     },
   },
   exit: {
     opacity: 0,
     transition: {
-      duration: 0.15,
-      ease: 'easeIn',
+      duration: 0.08,
+      ease: [0.4, 0, 1, 1],
     },
   },
 };
@@ -48,23 +46,18 @@ export const overlayVariants = {
 export const contentVariants = {
   initial: {
     opacity: 0,
-    transform: 'translateY(10px)',
   },
   enter: {
     opacity: 1,
-    transform: 'translateY(0)',
     transition: {
-      delay: 0.05,
-      duration: 0.2,
-      ease: [0.25, 0.1, 0.25, 1],
+      duration: 0.1,
+      ease: [0.2, 0, 0, 1],
     },
   },
   exit: {
     opacity: 0,
-    transform: 'translateY(-5px)',
     transition: {
-      duration: 0.1,
-      ease: 'easeIn',
+      duration: 0.06,
     },
   },
 };
@@ -72,21 +65,18 @@ export const contentVariants = {
 export const itemVariants = {
   initial: {
     opacity: 0,
-    transform: 'translateX(-10px)',
   },
   enter: {
     opacity: 1,
-    transform: 'translateX(0)',
     transition: {
-      duration: 0.15,
-      ease: [0.25, 0.1, 0.25, 1],
+      duration: 0.08,
+      ease: [0.2, 0, 0, 1],
     },
   },
   exit: {
     opacity: 0,
-    transform: 'translateX(10px)',
     transition: {
-      duration: 0.08,
+      duration: 0.04,
     },
   },
 };

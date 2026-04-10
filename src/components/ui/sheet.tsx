@@ -13,21 +13,31 @@ const SheetTrigger = SheetPrimitive.Trigger;
 
 const SheetClose = SheetPrimitive.Close;
 
-const SheetPortal = SheetPrimitive.Portal;
+const SheetPortal = React.memo(React.forwardRef<
+  React.ElementRef<typeof SheetPrimitive.Portal>,
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Portal>
+>((props, ref) => (
+  <SheetPrimitive.Portal {...props} ref={ref} />
+)));
+SheetPortal.displayName = SheetPrimitive.Portal.displayName;
 
 const SheetOverlay = React.memo(React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay> & {
+    enableBlur?: boolean;
+  }
+>(({ className, enableBlur = false, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      "fixed inset-0 z-50 bg-black/50",
+      "fixed inset-0 z-50 bg-black/60",
       "data-[state=open]:animate-sheet-fade-in data-[state=closed]:animate-sheet-fade-out"
     )}
-    style={{ 
+    data-slot="sheet-overlay"
+    style={{
       willChange: 'opacity',
-      contain: 'strict',
+      contain: 'layout style paint',
       transform: 'translateZ(0)',
+      backfaceVisibility: 'hidden',
     }}
     {...props}
     ref={ref}
@@ -60,28 +70,31 @@ interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {
   side?: "top" | "bottom" | "left" | "right";
+  enableBlur?: boolean;
 }
 
 const SheetContent = React.memo(React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = "right", className, children, ...props }, ref) => (
+>(({ side = "right", className, children, enableBlur = false, ...props }, ref) => (
   <SheetPortal>
-    <SheetOverlay />
+    <SheetOverlay enableBlur={enableBlur} />
     <SheetPrimitive.Content
       ref={ref}
       className={cn(sheetVariants({ side }), className)}
+      data-slot="sheet-content"
       style={{
         willChange: 'transform',
         contain: 'layout style paint',
         transform: 'translateZ(0)',
         backfaceVisibility: 'hidden',
         WebkitFontSmoothing: 'antialiased',
+        touchAction: 'pan-y',
       }}
       {...props}
     >
-      <SheetPrimitive.Close 
-        className="absolute right-4 top-4 rounded-mdui-lg p-1.5 opacity-70 ring-offset-background transition-all duration-150 hover:opacity-100 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none active:scale-95"
+      <SheetPrimitive.Close
+        className="absolute right-4 top-4 rounded-mdui-lg p-1.5 opacity-70 ring-offset-background transition-opacity duration-100 hover:opacity-100 hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none active:scale-95"
       >
         <X className="h-4 w-4" />
         <span className="sr-only">关闭</span>

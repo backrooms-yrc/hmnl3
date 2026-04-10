@@ -6,10 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
 import { PopupAnnouncementDialog } from '@/components/PopupAnnouncementDialog';
+
 import { 
   Home, 
   MessageSquare, 
@@ -38,9 +36,13 @@ import {
   Grid,
   BookOpen,
 } from 'lucide-react';
-import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, memo, lazy, Suspense } from 'react';
 import { getUnreadNotificationCount } from '@/db/api';
 import { cn } from '@/lib/utils';
+
+const Switch = lazy(() => import('@/components/ui/switch').then(m => ({ default: m.Switch })));
+const Label = lazy(() => import('@/components/ui/label').then(m => ({ default: m.Label })));
+const ThemeSwitcher = lazy(() => import('@/components/theme/ThemeSwitcher').then(m => ({ default: m.ThemeSwitcher })));
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -58,13 +60,11 @@ const NavItemComponent = memo(function NavItemComponent({
   item, 
   isActive, 
   isRestricted, 
-  isMobile, 
   onItemClick 
 }: { 
   item: NavItem; 
   isActive: boolean; 
   isRestricted: boolean;
-  isMobile: boolean;
   onItemClick: () => void;
 }) {
   const Icon = item.icon;
@@ -74,7 +74,7 @@ const NavItemComponent = memo(function NavItemComponent({
       to={item.path}
       className={cn(
         "flex items-center gap-4 px-4 py-3 md-sys-shape-corner-lg",
-        "md-sys-typescale-label-large transition-colors duration-150",
+        "md-sys-typescale-label-large",
         isActive && "bg-[hsl(var(--md-sys-color-secondary-container))] text-[hsl(var(--md-sys-color-on-secondary-container))]",
         !isActive && "text-[hsl(var(--md-sys-color-on-surface-variant))]",
         isRestricted && "opacity-38 pointer-events-none"
@@ -87,7 +87,7 @@ const NavItemComponent = memo(function NavItemComponent({
       {isRestricted && <Lock className="w-4 h-4" />}
       {!isRestricted && item.badge !== undefined && item.badge > 0 && (
         <Badge 
-          variant="filledError" 
+          variant="destructive" 
           className="h-5 min-w-5 px-1.5 md-sys-typescale-label-small md-sys-shape-corner-full"
         >
           {item.badge > 99 ? '99+' : item.badge}
@@ -104,7 +104,6 @@ interface NavContentProps {
   handleLogout: () => void;
   navItems: NavItem[];
   isRestricted: (path: string) => boolean;
-  isMobile: boolean;
   onNavItemClick: () => void;
   currentPath: string;
 }
@@ -116,7 +115,6 @@ const NavContent = memo(function NavContent({
   handleLogout,
   navItems,
   isRestricted,
-  isMobile,
   onNavItemClick,
   currentPath,
 }: NavContentProps) {
@@ -146,7 +144,6 @@ const NavContent = memo(function NavContent({
               item={item}
               isActive={currentPath === item.path}
               isRestricted={isRestricted(item.path)}
-              isMobile={isMobile}
               onItemClick={onNavItemClick}
             />
           ))}
@@ -154,24 +151,26 @@ const NavContent = memo(function NavContent({
       </ScrollArea>
       
       <div className="p-4 border-t border-[hsl(var(--md-sys-color-outline-variant))] space-y-4 shrink-0">
-        <div className="flex items-center justify-between p-3 md-sys-shape-corner-lg bg-[hsl(var(--md-sys-color-surface-container-highest))]">
-          <div className="flex items-center gap-3">
-            <Zap className="w-5 h-5 text-[hsl(var(--md-sys-color-tertiary))]" />
-            <Label htmlFor="perf-mode" className="md-sys-typescale-label-large cursor-pointer">
-              性能模式
-            </Label>
+        <Suspense fallback={<div className="h-10" />}>
+          <div className="flex items-center justify-between p-3 md-sys-shape-corner-lg bg-[hsl(var(--md-sys-color-surface-container-highest))]">
+            <div className="flex items-center gap-3">
+              <Zap className="w-5 h-5 text-[hsl(var(--md-sys-color-tertiary))]" />
+              <Label htmlFor="perf-mode" className="md-sys-typescale-label-large cursor-pointer">
+                性能模式
+              </Label>
+            </div>
+            <Switch
+              id="perf-mode"
+              checked={performanceMode}
+              onCheckedChange={setPerformanceMode}
+            />
           </div>
-          <Switch
-            id="perf-mode"
-            checked={performanceMode}
-            onCheckedChange={setPerformanceMode}
-          />
-        </div>
-        
-        <div className="flex items-center justify-between p-3 md-sys-shape-corner-lg bg-[hsl(var(--md-sys-color-surface-container-highest))]">
-          <span className="md-sys-typescale-label-large">主题风格</span>
-          <ThemeSwitcher />
-        </div>
+          
+          <div className="flex items-center justify-between p-3 md-sys-shape-corner-lg bg-[hsl(var(--md-sys-color-surface-container-highest))]">
+            <span className="md-sys-typescale-label-large">主题风格</span>
+            <ThemeSwitcher />
+          </div>
+        </Suspense>
         
         <div className="flex items-center gap-3 p-3 md-sys-shape-corner-xl bg-[hsl(var(--md-sys-color-surface-container-high))]">
           <div className="w-10 h-10 md-sys-shape-corner-full bg-[hsl(var(--md-sys-color-primary))] flex items-center justify-center text-[hsl(var(--md-sys-color-on-primary))] md-sys-typescale-title-medium">
@@ -406,7 +405,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 handleLogout={handleLogout}
                 navItems={navItems}
                 isRestricted={isRestricted}
-                isMobile={isMobile}
                 onNavItemClick={handleNavItemClick}
                 currentPath={location.pathname}
               />
@@ -420,14 +418,14 @@ export default function MainLayout({ children }: MainLayoutProps) {
                   variant="icon"
                   size="icon"
                   className="fixed top-4 left-4 z-40 glass-button md-sys-elevation-2"
-                  style={{ touchAction: 'manipulation' }}
+                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent 
-                side="left" 
-                className="p-0 w-72 flex flex-col overflow-hidden glass-sidebar"
+              <SheetContent
+                side="left"
+                className="p-0 w-72 flex flex-col overflow-hidden sidebar-mobile"
               >
                 <div className="flex items-center justify-between p-4 border-b border-[hsl(var(--md-sys-color-outline-variant)/0.2)] shrink-0">
                   <span className="md-sys-typescale-title-medium">导航菜单</span>
@@ -442,7 +440,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
                   handleLogout={handleLogout}
                   navItems={navItems}
                   isRestricted={isRestricted}
-                  isMobile={isMobile}
                   onNavItemClick={handleNavItemClick}
                   currentPath={location.pathname}
                 />

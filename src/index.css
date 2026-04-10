@@ -255,6 +255,8 @@
     font-size: 14px;
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
+    height: 100%;
+    height: -webkit-fill-available;
   }
 
   body {
@@ -264,13 +266,18 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
+    min-height: 100%;
+    min-height: -webkit-fill-available;
+    min-height: 100dvh;
   }
 
   #root {
     width: 100%;
     min-height: 100vh;
     min-height: 100dvh;
+    min-height: -webkit-fill-available;
     position: relative;
+    overflow-x: hidden;
   }
 
   #root::before {
@@ -285,12 +292,17 @@
     z-index: -1;
   }
 
-  /* 固定宽度容器 - 电脑端 */
   .fixed-width-container {
     width: 100%;
     max-width: 1440px;
-    margin: 0;
+    margin: 0 auto;
     position: relative;
+  }
+
+  @media (max-width: 1439px) {
+    .fixed-width-container {
+      max-width: 100%;
+    }
   }
 
   /* 平板设备使用自适应布局（不使用缩放） */
@@ -1204,18 +1216,22 @@
   }
 
   .glass-navbar {
-    background: hsl(var(--md-sys-color-surface) / 0.85);
-    backdrop-filter: blur(var(--glass-blur-heavy));
-    -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+    background: hsl(var(--md-sys-color-surface) / 0.97);
     border-bottom: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.15);
     transform: translateZ(0);
     will-change: transform;
   }
 
+  @media (min-width: 768px) {
+    .glass-navbar {
+      background: hsl(var(--md-sys-color-surface) / 0.85);
+      backdrop-filter: blur(var(--glass-blur-heavy));
+      -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+    }
+  }
+
   .glass-bottombar {
-    background: hsl(var(--md-sys-color-surface-container) / 0.85);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: hsl(var(--md-sys-color-surface-container) / 0.97);
     border-top: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.15);
     box-shadow: var(--md-sys-elevation-level2);
     transform: translateZ(0);
@@ -1230,6 +1246,14 @@
     padding: 0;
     padding-bottom: env(safe-area-inset-bottom, 0);
     box-sizing: border-box;
+  }
+
+  @media (min-width: 768px) {
+    .glass-bottombar {
+      background: hsl(var(--md-sys-color-surface-container) / 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+    }
   }
 
   .bottom-nav-container {
@@ -1257,8 +1281,8 @@
     height: 64px;
     padding: 8px 4px 4px;
     border-radius: var(--md-sys-shape-corner-large);
-    transition: background-color var(--md-sys-motion-duration-short3) linear,
-                transform var(--md-sys-motion-duration-short4) linear;
+    transition: background-color 50ms linear,
+                transform 80ms linear;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     position: relative;
@@ -1661,14 +1685,20 @@
   }
 
   .glass-sidebar {
-    background: hsl(var(--md-sys-color-surface) / 0.8);
-    backdrop-filter: blur(var(--glass-blur-heavy));
-    -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+    background: hsl(var(--md-sys-color-surface) / 0.97);
     border-right: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.15);
     transform: translateZ(0);
-    will-change: transform, opacity;
+    will-change: transform;
     contain: layout style paint;
     backface-visibility: hidden;
+  }
+
+  @media (min-width: 768px) {
+    .glass-sidebar {
+      background: hsl(var(--md-sys-color-surface) / 0.8);
+      backdrop-filter: blur(var(--glass-blur-heavy));
+      -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+    }
   }
 
   /* 毛玻璃按钮 */
@@ -2270,12 +2300,8 @@
 
 /* 全局平滑过渡 */
 @layer base {
-  * {
-    @apply transition-colors duration-150;
-  }
-
   a, button {
-    @apply transition-all duration-200;
+    transition: background-color 100ms linear, opacity 100ms linear;
   }
 }
 
@@ -2908,5 +2934,92 @@
     pointer-events: auto;
     transition: opacity var(--fahmnl-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
                 transform var(--fahmnl-transition-duration) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .preload-active {
+    contain: strict;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  .preload-active > * {
+    content-visibility: auto;
+  }
+
+  .sidebar-mobile {
+    background: hsl(var(--md-sys-color-surface) / 0.97);
+    border-right: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.15);
+    transform: translateZ(0);
+    will-change: transform;
+    contain: layout style paint;
+    backface-visibility: hidden;
+  }
+
+  .sidebar-mobile-blur {
+    background: hsl(var(--md-sys-color-surface) / 0.97);
+    border-right: 1px solid hsl(var(--md-sys-color-outline-variant) / 0.15);
+  }
+
+  @media (min-width: 768px) {
+    .sidebar-mobile-blur {
+      background: hsl(var(--md-sys-color-surface) / 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .sidebar-mobile {
+      background: hsl(var(--md-sys-color-surface));
+    }
+  }
+}
+
+@layer utilities {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  @media (orientation: landscape) and (max-height: 500px) {
+    .glass-bottombar {
+    }
+
+    .bottom-nav-item {
+    }
+
+    .bottom-nav-label {
+    }
+
+    .bottom-nav-center-btn {
+    }
+
+    .bottom-nav-center-label {
+    }
+
+    .main-content-mobile {
+    }
+  }
+
+  @media (orientation: landscape) and (max-height: 360px) {
+    .glass-bottombar {
+    }
+
+    .bottom-nav-icon-wrapper,
+    .bottom-nav-icon,
+    .bottom-nav-icon svg {
+    }
   }
 }
