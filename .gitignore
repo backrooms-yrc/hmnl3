@@ -1,2 +1,130 @@
-Nothing should be ignored in this case, as the added file is a markdown document (新手入门指南.md) which is a source/config file and should be tracked by git.
-node_modules
+# ===========================================
+# 环境变量与敏感信息（最高优先级）
+# ===========================================
+
+# 主环境文件
+.env
+.env.local
+.env.*.local
+
+# 开发环境特定文件
+.env.development
+.env.test
+.env.production
+.env.staging
+
+# 备份文件
+.env.backup
+.env.old
+.env.save
+*.env
+
+# ===========================================
+# 依赖目录
+# ===========================================
+node_modules/
+.pnp
+.pnp.js
+
+# ===========================================
+# 构建输出
+# ===========================================
+dist/
+build/
+.next/
+out/
+.nuxt/
+
+# ===========================================
+# 日志与调试文件
+# ===========================================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 编辑器/IDE 配置
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# ===========================================
+# 测试覆盖率与报告
+# ===========================================
+coverage/
+.nyc_output/
+.jest/
+
+# ===========================================
+# 缓存与临时文件
+# ===========================================
+.cache/
+.temp/
+tmp/
+*.tsbuildinfo
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# ===========================================
+# 操作系统生成文件
+# ===========================================
+.DS_Store
+.AppleDB
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ===========================================
+# Vite / React 特定
+# ===========================================
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# ===========================================
+# Supabase / 数据库
+# ===========================================
+supabase/.env
+supabase/functions/.env
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# ===========================================
+# 密钥与证书（绝对不能提交！）
+# ===========================================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets.json
+credentials.json
+service-account.json
+private-key.pem
+id_rsa
+id_rsa.pub
+
+# ===========================================
+# 其他敏感配置
+# ===========================================
+config/local.json
+settings.local.json
+netlify.toml (if contains secrets)
+vercel.json (if contains secrets)
+firebase.json (if contains API keys)
