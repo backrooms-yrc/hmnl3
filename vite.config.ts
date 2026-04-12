@@ -19,6 +19,11 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     strictPort: true,
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      'bofsettp6na7ey3eraljgcjhqeydhfs6tyupaln7jtyshe3xghxc4xad.onion',
+    ],
     cors: {
       origin: '*',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
