@@ -32,6 +32,7 @@ import {
   HardDrive,
   X
 } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 const MAX_STORAGE = 5 * 1024 * 1024; // 5MB
 
@@ -301,7 +302,7 @@ export default function BroadcastEditor() {
                   <TabsContent value="preview">
                     <div className="w-full min-h-96 p-4 bg-white rounded-mdui-lg border border-outline-variant overflow-auto">
                       <div 
-                        dangerouslySetInnerHTML={{ __html: htmlContent }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlContent, { USE_PROFILES: { html: true } }) }}
                         className="prose prose-sm max-w-none"
                       />
                     </div>

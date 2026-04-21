@@ -11,11 +11,12 @@ import { Button } from '@/components/ui/button';
 import { getActivePopupAnnouncements } from '@/db/api';
 import type { PopupAnnouncement } from '@/types/types';
 import { X, Bell, Sparkles } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 const AnnouncementContent = memo(({ content }: { content: string }) => (
   <div 
     className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap text-[hsl(var(--md-sys-color-on-surface))]"
-    dangerouslySetInnerHTML={{ __html: content }}
+    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content, { USE_PROFILES: { html: true } }) }}
   />
 ));
 
