@@ -8,6 +8,7 @@ import { getBroadcastPage, incrementBroadcastPageView } from '@/db/api';
 import type { BroadcastPage } from '@/types/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, Calendar, User, Edit, ArrowLeft, Radio } from 'lucide-react';
+import DOMPurify from 'dompurify';
 
 export default function BroadcastView() {
   const { id } = useParams();
@@ -152,7 +153,7 @@ export default function BroadcastView() {
         <Card className="overflow-hidden">
           <CardContent className="p-0">
             <div 
-              dangerouslySetInnerHTML={{ __html: page.html_content }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(page.html_content, { USE_PROFILES: { html: true } }) }}
               className="prose prose-sm max-w-none p-6 min-h-96"
             />
           </CardContent>
